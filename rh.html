@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dados Contratuais — S2i RH</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f3;color:#1a1a1a}
+.app{max-width:680px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.header{background:#1B4FD8;border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:14px}
+.logo{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0}
+.header h1{font-size:17px;font-weight:500;color:#fff}
+.header p{font-size:13px;color:rgba(255,255,255,0.8);margin-top:2px}
+.collab-card{background:#fff;border:0.5px solid rgba(0,0,0,0.15);border-radius:12px;padding:1.25rem 1.5rem;margin-bottom:1rem}
+.collab-name{font-size:16px;font-weight:500;margin-bottom:4px}
+.collab-info{font-size:13px;color:#666}
+.card{background:#fff;border:0.5px solid rgba(0,0,0,0.15);border-radius:12px;padding:1.5rem;margin-bottom:1rem}
+.sec{font-size:12px;font-weight:500;color:#1B4FD8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:0.5px solid rgba(0,0,0,0.1)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:13px;color:#666}
+.f label span{color:#DC2626;margin-left:2px}
+.f input,.f select,.f textarea{width:100%;padding:8px 10px;border:0.5px solid rgba(0,0,0,0.3);border-radius:8px;font-size:14px;background:#fff;color:#1a1a1a;font-family:inherit;outline:none}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:#1B4FD8;box-shadow:0 0 0 2px rgba(27,79,216,.1)}
+.f textarea{resize:vertical;min-height:60px}
+.radio-group{display:flex;gap:12px;flex-wrap:wrap;padding:4px 0}
+.radio-group label{display:flex;align-items:center;gap:6px;font-size:14px;cursor:pointer}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:1.5rem}
+.btn{padding:9px 22px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:0.5px solid rgba(0,0,0,0.3);background:transparent;color:#1a1a1a;font-family:inherit}
+.btn.success{background:#16A34A;color:#fff;border-color:#16A34A}
+.btn.disabled{opacity:.6;pointer-events:none}
+.warn{background:#FFFBEB;border:0.5px solid #FDE68A;border-radius:8px;padding:.75rem 1rem;font-size:13px;color:#92400E;margin-bottom:1rem}
+.ok{background:#F0FDF4;border:0.5px solid #BBF7D0;border-radius:12px;padding:2rem;text-align:center}
+.ok h2{font-size:18px;font-weight:500;color:#15803D;margin-bottom:.5rem}
+.ok p{font-size:14px;color:#166534;line-height:1.7}
+.ok a{color:#15803D;font-weight:500}
+.erro-box{background:#FEF2F2;border:0.5px solid #FECACA;border-radius:12px;padding:2rem;text-align:center}
+.erro-box h2{font-size:18px;font-weight:500;color:#DC2626;margin-bottom:.5rem}
+.erro-box p{font-size:14px;color:#991B1B}
+.prog{height:4px;background:#e5e7eb;border-radius:4px;margin-top:10px;overflow:hidden;display:none}
+.prog .fill{height:100%;background:#16A34A;width:0%;transition:width .3s}
+.prog-msg{font-size:13px;color:#666;text-align:center;margin-top:6px;display:none}
+.skeleton{background:#f3f4f6;border-radius:6px;height:20px;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <div class="logo">S2i</div>
+    <div>
+      <h1>Dados contratuais — RH</h1>
+      <p>Complementar ficha de admissão</p>
+    </div>
+  </div>
+
+  <div id="loading" class="collab-card">
+    <div class="skeleton" style="width:55%;margin-bottom:8px"></div>
+    <div class="skeleton" style="width:38%"></div>
+  </div>
+
+  <div id="conteudo" style="display:none">
+    <div class="collab-card">
+      <div class="collab-name">👤 <span id="collabNome"></span></div>
+      <div class="collab-info">CPF: <span id="collabCpf"></span> &nbsp;|&nbsp; Formulário do colaborador já recebido ✓</div>
+    </div>
+
+    <div id="formRH">
+      <div class="warn">⚠ As informações de admissão devem ser enviadas ao eSocial até 1 dia antes do início do trabalho. O envio em atraso pode gerar multa.</div>
+
+      <div class="card">
+        <div class="sec">Contrato e cargo</div>
+        <div class="grid">
+          <div class="f" style="grid-column:1/-1">
+            <label>Nome da empresa<span>*</span></label>
+            <input type="text" id="empresa" placeholder="Razão social">
+          </div>
+          <div class="f">
+            <label>Cargo<span>*</span></label>
+            <input type="text" id="cargo" placeholder="Ex: Analista Comercial">
+          </div>
+          <div class="f">
+            <label>Salário (R$)<span>*</span></label>
+            <input type="text" id="salario" placeholder="Ex: 3.500,00">
+          </div>
+          <div class="f">
+            <label>Data de admissão<span>*</span></label>
+            <input type="date" id="dataAdm">
+          </div>
+          <div class="f">
+            <label>Período de experiência<span>*</span></label>
+            <select id="experiencia">
+              <option value="">Selecionar</option>
+              <option>30 dias</option>
+              <option>45 dias</option>
+              <option>60 dias (30+30)</option>
+              <option>90 dias (45+45)</option>
+              <option>Sem período de experiência</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec">Benefícios e jornada</div>
+        <div class="grid">
+          <div class="f">
+            <label>Vale-transporte<span>*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="vt" value="Sim"> Sim</label>
+              <label><input type="radio" name="vt" value="Não"> Não</label>
+            </div>
+          </div>
+          <div class="f">
+            <label>Outros benefícios</label>
+            <input type="text" id="outroBenef" placeholder="Ex: Vale-refeição, plano de saúde">
+          </div>
+          <div class="f" style="grid-column:1/-1">
+            <label>Horário de trabalho (folga e intervalo)<span>*</span></label>
+            <input type="text" id="horario" placeholder="Ex: Seg–Sex 08h–17h, folga Dom, intervalo 12h–13h">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="sec">Documentos e observações</div>
+        <div class="grid">
+          <div class="f">
+            <label>Exame admissional realizado?<span>*</span></label>
+            <div class="radio-group">
+              <label><input type="radio" name="exame" value="Sim"> Sim</label>
+              <label><input type="radio" name="exame" value="Não"> Não</label>
+            </div>
+          </div>
+          <div class="f" style="grid-column:1/-1">
+            <label>Informações adicionais</label>
+            <textarea id="obs" placeholder="Observações, situações especiais..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="prog" id="prog"><div class="fill" id="progFill"></div></div>
+      <div class="prog-msg" id="progMsg"></div>
+
+      <div class="actions">
+        <button class="btn success" id="btnSalvar" onclick="salvar()">✓ Finalizar admissão</button>
+      </div>
+    </div>
+
+    <div id="sucesso" style="display:none">
+      <div class="ok">
+        <h2>✓ Admissão finalizada!</h2>
+        <p>Ficha completa gerada e salva no Drive.<br><br>
+          <a id="linkPasta" href="#" target="_blank">📁 Abrir pasta do colaborador →</a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div id="erroToken" style="display:none">
+    <div class="erro-box">
+      <h2>Link inválido</h2>
+      <p>Este link é inválido, já foi utilizado ou expirou.</p>
+    </div>
+  </div>
+
+</div>
+<script>
+var GAS   = 'https://script.google.com/macros/s/AKfycbx4QcGGCcNKq9KDTmbjsrvT50sag55DWbjh6QpmvvVrB8PTLeVKko-yDoNpXN-CNEhF_A/exec';
+var TOKEN = new URLSearchParams(window.location.search).get('token') || '';
+
+function gi(id) { return document.getElementById(id); }
+function gv(id) { var e = gi(id); return (e && e.value && e.value.trim()) ? e.value.trim() : '—'; }
+function fd(val) {
+  if (!val || val === '—') return '—';
+  var p = val.split('-');
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+function radio(name) {
+  var e = document.querySelector('input[name="' + name + '"]:checked');
+  return e ? e.value : '—';
+}
+function setP(pct, msg) {
+  gi('prog').style.display = 'block';
+  gi('progFill').style.width = pct + '%';
+  gi('progMsg').style.display = 'block';
+  gi('progMsg').textContent = msg;
+}
+function resetSalvar() {
+  gi('btnSalvar').textContent = '✓ Finalizar admissão';
+  gi('btnSalvar').classList.remove('disabled');
+  gi('prog').style.display = 'none';
+  gi('progMsg').style.display = 'none';
+}
+function mostrarErro() {
+  gi('loading').style.display = 'none';
+  gi('conteudo').style.display = 'none';
+  gi('erroToken').style.display = 'block';
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  if (!TOKEN) { mostrarErro(); return; }
+
+  fetch(GAS + '?modo=info&token=' + encodeURIComponent(TOKEN))
+    .then(function(res) { return res.json(); })
+    .then(function(info) {
+      gi('loading').style.display = 'none';
+      if (!info.sucesso) { mostrarErro(); return; }
+      gi('collabNome').textContent = info.nome;
+      gi('collabCpf').textContent  = info.cpf;
+      gi('conteudo').style.display = 'block';
+    })
+    .catch(function() { mostrarErro(); });
+});
+
+function salvar() {
+  if (!gi('empresa').value.trim())  { alert('Preencha o nome da empresa.'); return; }
+  if (!gi('cargo').value.trim())    { alert('Preencha o cargo.'); return; }
+  if (!gi('salario').value.trim())  { alert('Preencha o salário.'); return; }
+  if (!gi('dataAdm').value)         { alert('Preencha a data de admissão.'); return; }
+  if (!gi('experiencia').value)     { alert('Selecione o período de experiência.'); return; }
+  if (!gi('horario').value.trim())  { alert('Preencha o horário de trabalho.'); return; }
+
+  gi('btnSalvar').textContent = 'Salvando...';
+  gi('btnSalvar').classList.add('disabled');
+  setP(30, 'Gerando ficha completa...');
+
+  var dados = {
+    empresa:     gv('empresa'),
+    cargo:       gv('cargo'),
+    salario:     gv('salario'),
+    dataAdm:     fd(gi('dataAdm').value),
+    experiencia: gv('experiencia'),
+    vt:          radio('vt'),
+    outroBenef:  gv('outroBenef'),
+    horario:     gv('horario'),
+    exame:       radio('exame'),
+    obs:         gv('obs')
+  };
+
+  fetch(GAS, {
+    method: 'POST',
+    body: JSON.stringify({ acao: 'rh', token: TOKEN, dados: dados })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(r) {
+    if (r.sucesso) {
+      setP(100, 'Concluído!');
+      gi('linkPasta').href = r.linkPasta;
+      setTimeout(function() {
+        gi('formRH').style.display = 'none';
+        gi('sucesso').style.display = 'block';
+        window.scrollTo(0, 0);
+      }, 500);
+    } else {
+      alert('Erro: ' + r.erro);
+      resetSalvar();
+    }
+  })
+  .catch(function(err) {
+    alert('Erro de conexão: ' + err.message);
+    resetSalvar();
+  });
+}
+</script>
+</body>
+</html>
